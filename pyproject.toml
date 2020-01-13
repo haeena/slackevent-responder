@@ -1,0 +1,81 @@
+[tool.poetry]
+name = "slackevent_responder"
+version = "0.1.0"
+description = "ASGI based Slack Events API adapter for Python"
+authors = ["Toshiaki Hatano <haeena@haeena.net>"]
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/haeena/slackevent-responder"
+
+include = [
+    "README.md",
+    "pyproject.toml",
+    "LICENSE"
+]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+starlette = "^0.13.0"
+
+[tool.poetry.dev-dependencies]
+ptvsd = "^4.3"
+flake8 = "^3.7"
+black = {version = "^18.9b0", allow-prereleases = true}
+pytest = "^5.2"
+isort = "^4.3"
+coverage = "^4.5"
+pytest-cov = "^2.8"
+mypy = "^0.740.0"
+pre-commit = "^1.20"
+tox = "^3.14"
+bandit = "^1.6.2"
+flake8-bugbear = "^19.8.0"
+request = "^2019.4.13"
+freezegun = "^0.3.12"
+requests = "^2.22.0"
+
+[tool.black]
+line-length = 80
+target-version = ['py38']
+include = '\.pyi?$'
+exclude = '''
+(
+  /(
+      \.eggs
+    | \.git
+    | \.mypy_cache
+    | \.tox
+    | \.venv
+    | _build
+    | buck-out
+    | build
+    | dist
+  )
+)
+'''
+
+[tool.isort]
+known_first_party = 'slackevent-responder'
+known_third_party = ["freezegun", "pytest", "slack", "starlette", "uvicorn"]
+multi_line_output = 3
+lines_after_imports = 2
+force_grid_wrap = 0
+combine_as_imports = true
+include_trailing_comma = true
+
+[tool.tox]
+legacy_tox_ini = """
+[tox]
+isolated_build = true
+envlist = py38
+
+[testenv]
+whitelist_externals = poetry
+commands =
+    poetry install --no-dev -vvv
+    poetry run pytest --cov=slackevent_responder tests/
+"""
+
+[build-system]
+requires = ["poetry>=1.0"]
+build-backend = "poetry.masonry.api"

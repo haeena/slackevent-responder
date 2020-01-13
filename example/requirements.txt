@@ -1,0 +1,16 @@
+aiohttp==3.6.2
+async-timeout==3.0.1
+attrs==19.3.0
+chardet==3.0.4
+Click==7.0
+h11==0.9.0
+httptools==0.0.13
+idna==2.8
+multidict==4.7.3
+slackclient==2.5.0
+slackevent-responder==0.1.0
+starlette==0.13.0
+uvicorn==0.11.1
+uvloop==0.14.0
+websockets==8.1
+yarl==1.4.2
