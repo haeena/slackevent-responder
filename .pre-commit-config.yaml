@@ -51,6 +51,7 @@ repos:
   rev: v0.761
   hooks:
     - id: mypy
+      files: ^src/.*$
 
 - repo: https://github.com/pre-commit/pre-commit-hooks
   rev: v2.4.0
