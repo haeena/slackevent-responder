@@ -73,7 +73,7 @@ envlist = py38
 whitelist_externals = poetry
 commands =
     poetry install --no-dev -vvv
-    poetry run pytest --cov=slackevent_responder tests/
+    poetry run pytest --cov-report=xml --cov=slackevent_responder tests/
 """
 
 [build-system]
