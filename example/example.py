@@ -1,10 +1,10 @@
 import os
 
+import uvicorn
+from slack import WebClient as SlackClient
 from starlette.applications import Starlette
 from starlette.routing import Mount
 
-import uvicorn
-from slack import WebClient as SlackClient
 from slackevent_responder import SlackEventApp
 
 
