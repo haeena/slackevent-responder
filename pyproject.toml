@@ -75,6 +75,9 @@ python =
 
 [testenv]
 whitelist_externals = poetry
+deps =
+    poetry
+    pytest-cov
 commands =
     poetry install --no-dev -vvv
     poetry run pytest --cov-report=xml --cov=slackevent_responder tests/
