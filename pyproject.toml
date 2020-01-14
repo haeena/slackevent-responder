@@ -75,11 +75,10 @@ python =
 
 [testenv]
 whitelist_externals = poetry
-deps =
-    pytest-cov
+skip_install = true
 commands =
     poetry install --no-dev -vvv
-    pytest --cov-report=xml --cov=slackevent_responder tests/
+    poetry run pytest --cov-report=xml --cov=slackevent_responder tests/
 """
 
 [build-system]
