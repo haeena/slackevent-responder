@@ -12,11 +12,6 @@ repos:
     - id: check-yaml
     - id: check-toml
 
-- repo: https://github.com/PyCQA/doc8
-  rev: 0.8.1rc2
-  hooks:
-    - id: doc8
-
 - repo: https://github.com/markdownlint/markdownlint
   rev: v0.8.0
   hooks:
