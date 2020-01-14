@@ -69,11 +69,17 @@ legacy_tox_ini = """
 isolated_build = true
 envlist = py38
 
+[gh-actions]
+python =
+    3.8: py38
+
 [testenv]
 whitelist_externals = poetry
+deps =
+    poetry
 commands =
-    poetry install --no-dev -vvv
-    poetry run pytest --cov=slackevent_responder tests/
+    poetry install -vvv
+    poetry run pytest --cov-report=xml --cov=slackevent_responder tests/
 """
 
 [build-system]
