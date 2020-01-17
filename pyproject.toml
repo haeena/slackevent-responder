@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "slackevent_responder"
 version = "0.1.0"
-description = "ASGI based Slack Events API adapter for Python"
+description = "ASGI adapter for Slack Events API"
 authors = ["Toshiaki Hatano <haeena@haeena.net>"]
 license = "MIT"
 readme = "README.md"
