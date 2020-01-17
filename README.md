@@ -49,3 +49,9 @@ api.run(port=3000)
 ```
 
 More examples can be found [here](./example/).
+
+## Change Logs
+
+### v0.1.0 (2020-01-17)
+
+- Initial Release 🎉
