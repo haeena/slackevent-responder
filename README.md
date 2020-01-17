@@ -17,7 +17,7 @@ Oh, one more point, this library can handle both sync and async function for eve
 ## Installation
 
 ```sh
-TBD
+pip install slackevent-responder
 ```
 
 ## Setup Slack App with Event Subscription
