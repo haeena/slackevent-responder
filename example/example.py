@@ -12,11 +12,11 @@ from slackevent_responder import SlackEventApp
 # Setup SlackEventApp to receive Events from Slack API
 slack_signing_secret = os.environ["SLACK_SIGNING_SECRET"]
 slack_events_app = SlackEventApp(
-    path="/slack/events", slack_signing_secret=slack_signing_secret
+    slack_event_path="/events", slack_signing_secret=slack_signing_secret
 )
 
 # Mount SlackEventApp to Starlette
-app = Starlette(debug=True, routes=[Mount("/", slack_events_app)])
+app = Starlette(debug=True, routes=[Mount("/slack", slack_events_app)])
 
 # Create a SlackClient for your bot to use for Web API requests
 slack_bot_token = os.environ["SLACK_BOT_TOKEN"]

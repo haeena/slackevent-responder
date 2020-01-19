@@ -33,7 +33,7 @@ import responder
 from slackevent_responder import SlackEventApp
 
 slack_events_app = SlackEventApp(
-    path="/events", slack_signing_secret=SLACK_SIGNING_SECRET
+    slack_event_path="/events", slack_signing_secret=SLACK_SIGNING_SECRET
 )
 
 @slack_events_app.on("reaction_added")
