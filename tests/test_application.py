@@ -9,24 +9,25 @@ from slackevent_responder import SlackEventApp
 from .helpers.helpers import create_signature
 
 
-def test_verify_signature(verify_signatures_fixture):
-    # setup
-    (
-        expected,
-        signing_secret,
-        timestamp,
-        data,
-        signature,
-    ) = verify_signatures_fixture
-    app = SlackEventApp(slack_signing_secret=signing_secret)
+class TestSignature:
+    def test_verify_signature(self, verify_signatures_fixture):
+        # setup
+        (
+            expected,
+            signing_secret,
+            timestamp,
+            data,
+            signature,
+        ) = verify_signatures_fixture
+        app = SlackEventApp(slack_signing_secret=signing_secret)
 
-    # run
-    result = app.verify_signature(
-        timestamp=timestamp, request_body=data, signature=signature
-    )
+        # run
+        result = app.verify_signature(
+            timestamp=timestamp, request_body=data, signature=signature
+        )
 
-    # validate
-    assert result == expected
+        # validate
+        assert result == expected
 
 
 class TestEndpoint:
@@ -307,7 +308,7 @@ class TestEventHandler:
         assert len(handlers2) == 0
 
     @freeze_time("2013-08-14")
-    def test_on_sync(
+    def test_run_handler_on_sync(
         self, app, signing_secret, slack_event_path, reaction_event_fixture
     ):
         # setup
@@ -336,7 +337,7 @@ class TestEventHandler:
         assert EVENT_DATA_IN_HANDLER == json_data
 
     @freeze_time("2013-08-14")
-    def test_on_async(
+    def test_run_handler_on_async(
         self, app, signing_secret, slack_event_path, reaction_event_fixture
     ):
         # setup
@@ -365,7 +366,7 @@ class TestEventHandler:
         assert EVENT_DATA_IN_HANDLER == json_data
 
     @freeze_time("2013-08-14")
-    def test_once_sync(
+    def test_run_handler_once_sync(
         self, app, signing_secret, slack_event_path, reaction_event_fixture
     ):
         # setup
@@ -394,7 +395,7 @@ class TestEventHandler:
         assert EVENT_DATA_IN_HANDLER == json_data
 
     @freeze_time("2013-08-14")
-    def test_once_async(
+    def test_run_handler_once_async(
         self, app, signing_secret, slack_event_path, reaction_event_fixture
     ):
         # setup
