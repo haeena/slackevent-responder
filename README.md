@@ -48,7 +48,7 @@ api.mount('/slack', slack_events_app)
 api.run(port=3000)
 ```
 
-More examples can be found [here](./example/).
+More examples can be found [here](https://github.com/haeena/slackevent-responder/blob/master/example/).
 
 ## Change Logs
 
