@@ -4,7 +4,7 @@ import time
 from freezegun import freeze_time
 from starlette.testclient import TestClient
 
-from slackevent_responder import SlackEventApp
+from slackevent_responder import SlackEventApp, SlackEventAppException
 
 from .helpers.helpers import create_signature
 
@@ -422,3 +422,99 @@ class TestEventHandler:
 
         # validate
         assert EVENT_DATA_IN_HANDLER == json_data
+
+    @freeze_time("2013-08-14")
+    def test_run_handler_on_run_everytime(
+        self, app, signing_secret, slack_event_path, reaction_event_fixture
+    ):
+        # setup
+        client = TestClient(app)
+        timestamp = str(int(time.time()))
+        json_data = reaction_event_fixture
+        event_type = json_data["event"]["type"]
+        data = json.dumps(json_data)
+        signature = create_signature(signing_secret, timestamp, data)
+        headers = {
+            "X-Slack-Request-Timestamp": timestamp,
+            "X-Slack-Signature": signature,
+        }
+
+        COUNTER = 0
+
+        @app.on(event_type)
+        async def handler(event_data):
+            nonlocal COUNTER
+            COUNTER += 1
+
+        # run
+
+        client.post(slack_event_path, data=data, headers=headers)
+        client.post(slack_event_path, data=data, headers=headers)
+
+        # validate
+        assert COUNTER == 2
+
+    @freeze_time("2013-08-14")
+    def test_run_handler_once_run_once(
+        self, app, signing_secret, slack_event_path, reaction_event_fixture
+    ):
+        # setup
+        client = TestClient(app)
+        timestamp = str(int(time.time()))
+        json_data = reaction_event_fixture
+        event_type = json_data["event"]["type"]
+        data = json.dumps(json_data)
+        signature = create_signature(signing_secret, timestamp, data)
+        headers = {
+            "X-Slack-Request-Timestamp": timestamp,
+            "X-Slack-Signature": signature,
+        }
+
+        COUNTER = 0
+
+        @app.once(event_type)
+        async def handler(event_data):
+            nonlocal COUNTER
+            COUNTER += 1
+
+        # run
+
+        client.post(slack_event_path, data=data, headers=headers)
+        client.post(slack_event_path, data=data, headers=headers)
+
+        # validate
+        assert COUNTER == 1
+
+    def test_error_handler_sync(self, app, signing_secret, slack_event_path):
+        # setup
+        client = TestClient(app)
+
+        EVENT_DATA_IN_HANDLER = None
+
+        # run
+        @app.on("error")
+        def handler(event_data):
+            nonlocal EVENT_DATA_IN_HANDLER
+            EVENT_DATA_IN_HANDLER = event_data
+
+        client.post(slack_event_path)
+
+        # validate
+        assert isinstance(EVENT_DATA_IN_HANDLER, SlackEventAppException)
+
+    def test_error_handler_async(self, app, signing_secret, slack_event_path):
+        # setup
+        client = TestClient(app)
+
+        EVENT_DATA_IN_HANDLER = None
+
+        # run
+        @app.on("error")
+        async def handler(event_data):
+            nonlocal EVENT_DATA_IN_HANDLER
+            EVENT_DATA_IN_HANDLER = event_data
+
+        client.post(slack_event_path)
+
+        # validate
+        assert isinstance(EVENT_DATA_IN_HANDLER, SlackEventAppException)
