@@ -19,21 +19,19 @@ from .version import __version__
 class SlackEventApp(Router):
     def __init__(
         self,
-        slack_signing_secret: str,
-        slack_event_path: str = "/slack/events",
+        signing_secret: str,
+        event_path: str = "/slack/events",
         **kwargs: Any,
     ):
-        self.slack_event_path = slack_event_path
-        self._slack_signing_secret = slack_signing_secret
+        self.event_path = event_path
+        self._signing_secret = signing_secret
         self._handlers: Dict[
             Hashable, Dict[Callable[..., Any], Callable[..., Any]]
         ] = defaultdict(OrderedDict)
         self._package_info = self._get_package_info()
 
         super().__init__(
-            routes=[
-                Route(slack_event_path, self.endpoint, methods=["GET", "POST"])
-            ]
+            routes=[Route(event_path, self.endpoint, methods=["GET", "POST"])]
         )
 
     def _get_package_info(self) -> str:
@@ -64,7 +62,7 @@ class SlackEventApp(Router):
         req = f"v0:{timestamp}:{request_body}"
 
         hexdigest = hmac.new(
-            self._slack_signing_secret.encode(), req.encode(), hashlib.sha256
+            self._signing_secret.encode(), req.encode(), hashlib.sha256
         ).hexdigest()
         request_hash = f"v0={hexdigest}"
 

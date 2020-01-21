@@ -21,15 +21,13 @@ def signing_secret():
 
 
 @pytest.fixture(scope="session")
-def slack_event_path():
-    return "/slack/events"
+def event_path():
+    return "/path/to/events"
 
 
 @pytest.fixture(scope="function")
-def app(signing_secret, slack_event_path):
-    app = SlackEventApp(
-        slack_signing_secret=signing_secret, path=slack_event_path
-    )
+def app(signing_secret, event_path):
+    app = SlackEventApp(signing_secret=signing_secret, event_path=event_path)
     return app
 
 

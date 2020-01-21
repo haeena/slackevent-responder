@@ -19,7 +19,7 @@ class TestSignature:
             data,
             signature,
         ) = verify_signatures_fixture
-        app = SlackEventApp(slack_signing_secret=signing_secret)
+        app = SlackEventApp(signing_secret=signing_secret)
 
         # run
         result = app.verify_signature(
@@ -31,12 +31,12 @@ class TestSignature:
 
 
 class TestEndpoint:
-    def test_get(self, app, signing_secret, slack_event_path):
+    def test_get(self, app, signing_secret, event_path):
         # setup
         client = TestClient(app)
 
         # run
-        response = client.get(slack_event_path)
+        response = client.get(event_path)
 
         # validate
         assert (
@@ -44,22 +44,20 @@ class TestEndpoint:
         )
         assert response.status_code == 404
 
-    def test_no_timestamp(self, app, signing_secret, slack_event_path):
+    def test_no_timestamp(self, app, signing_secret, event_path):
         # setup
         client = TestClient(app)
         headers = {}
 
         # run
-        response = client.post(slack_event_path, headers=headers)
+        response = client.post(event_path, headers=headers)
 
         # validate
         assert response.text == "Request doesn't contain timestamp header"
         assert response.status_code == 403
 
     @freeze_time("2013-08-14")
-    def test_invalid_before_timestamp(
-        self, app, signing_secret, slack_event_path
-    ):
+    def test_invalid_before_timestamp(self, app, signing_secret, event_path):
         # setup
         client = TestClient(app)
         headers = {
@@ -67,16 +65,14 @@ class TestEndpoint:
         }
 
         # run
-        response = client.post(slack_event_path, headers=headers)
+        response = client.post(event_path, headers=headers)
 
         # validate
         assert response.text == "Invalid timestamp in request header"
         assert response.status_code == 403
 
     @freeze_time("2013-08-14")
-    def test_invalid_after_timestamp(
-        self, app, signing_secret, slack_event_path
-    ):
+    def test_invalid_after_timestamp(self, app, signing_secret, event_path):
         # setup
         client = TestClient(app)
         headers = {
@@ -84,14 +80,14 @@ class TestEndpoint:
         }
 
         # run
-        response = client.post(slack_event_path, headers=headers)
+        response = client.post(event_path, headers=headers)
 
         # validate
         assert response.text == "Invalid timestamp in request header"
         assert response.status_code == 403
 
     @freeze_time("2013-08-14")
-    def test_invalid_signature(self, app, signing_secret, slack_event_path):
+    def test_invalid_signature(self, app, signing_secret, event_path):
         # setup
         client = TestClient(app)
         timestamp = str(int(time.time()))
@@ -101,7 +97,7 @@ class TestEndpoint:
         }
 
         # run
-        response = client.post(slack_event_path, headers=headers)
+        response = client.post(event_path, headers=headers)
 
         # validate
         assert response.text == "Invalid request signature"
@@ -109,7 +105,7 @@ class TestEndpoint:
 
     @freeze_time("2013-08-14")
     def test_challenge(
-        self, app, signing_secret, slack_event_path, url_challenge_fixture
+        self, app, signing_secret, event_path, url_challenge_fixture
     ):
         # setup
         client = TestClient(app)
@@ -123,7 +119,7 @@ class TestEndpoint:
         }
 
         # run
-        response = client.post(slack_event_path, data=data, headers=headers)
+        response = client.post(event_path, data=data, headers=headers)
 
         # validate
         assert response.text == json_data["challenge"]
@@ -131,7 +127,7 @@ class TestEndpoint:
 
     @freeze_time("2013-08-14")
     def test_event(
-        self, app, signing_secret, slack_event_path, reaction_event_fixture
+        self, app, signing_secret, event_path, reaction_event_fixture
     ):
         # setup
         client = TestClient(app)
@@ -145,7 +141,7 @@ class TestEndpoint:
         }
 
         # run
-        response = client.post(slack_event_path, data=data, headers=headers)
+        response = client.post(event_path, data=data, headers=headers)
 
         # validate
         assert response.text == ""
@@ -154,7 +150,7 @@ class TestEndpoint:
 
     @freeze_time("2013-08-14")
     def test_no_event(
-        self, app, signing_secret, slack_event_path, reaction_event_fixture
+        self, app, signing_secret, event_path, reaction_event_fixture
     ):
         # setup
         client = TestClient(app)
@@ -169,7 +165,7 @@ class TestEndpoint:
         }
 
         # run
-        response = client.post(slack_event_path, data=data, headers=headers)
+        response = client.post(event_path, data=data, headers=headers)
 
         # validate
         assert response.text == "No event in request body"
@@ -177,7 +173,7 @@ class TestEndpoint:
 
     @freeze_time("2013-08-14")
     def test_no_event_type(
-        self, app, signing_secret, slack_event_path, reaction_event_fixture
+        self, app, signing_secret, event_path, reaction_event_fixture
     ):
         # setup
         client = TestClient(app)
@@ -192,7 +188,7 @@ class TestEndpoint:
         }
 
         # run
-        response = client.post(slack_event_path, data=data, headers=headers)
+        response = client.post(event_path, data=data, headers=headers)
 
         # validate
         assert response.text == "No event in request body"
@@ -309,7 +305,7 @@ class TestEventHandler:
 
     @freeze_time("2013-08-14")
     def test_run_handler_on_sync(
-        self, app, signing_secret, slack_event_path, reaction_event_fixture
+        self, app, signing_secret, event_path, reaction_event_fixture
     ):
         # setup
         client = TestClient(app)
@@ -331,14 +327,14 @@ class TestEventHandler:
             nonlocal EVENT_DATA_IN_HANDLER
             EVENT_DATA_IN_HANDLER = event_data
 
-        client.post(slack_event_path, data=data, headers=headers)
+        client.post(event_path, data=data, headers=headers)
 
         # validate
         assert EVENT_DATA_IN_HANDLER == json_data
 
     @freeze_time("2013-08-14")
     def test_run_handler_on_async(
-        self, app, signing_secret, slack_event_path, reaction_event_fixture
+        self, app, signing_secret, event_path, reaction_event_fixture
     ):
         # setup
         client = TestClient(app)
@@ -360,14 +356,14 @@ class TestEventHandler:
             nonlocal EVENT_DATA_IN_HANDLER
             EVENT_DATA_IN_HANDLER = event_data
 
-        client.post(slack_event_path, data=data, headers=headers)
+        client.post(event_path, data=data, headers=headers)
 
         # validate
         assert EVENT_DATA_IN_HANDLER == json_data
 
     @freeze_time("2013-08-14")
     def test_run_handler_once_sync(
-        self, app, signing_secret, slack_event_path, reaction_event_fixture
+        self, app, signing_secret, event_path, reaction_event_fixture
     ):
         # setup
         client = TestClient(app)
@@ -389,14 +385,14 @@ class TestEventHandler:
             nonlocal EVENT_DATA_IN_HANDLER
             EVENT_DATA_IN_HANDLER = event_data
 
-        client.post(slack_event_path, data=data, headers=headers)
+        client.post(event_path, data=data, headers=headers)
 
         # validate
         assert EVENT_DATA_IN_HANDLER == json_data
 
     @freeze_time("2013-08-14")
     def test_run_handler_once_async(
-        self, app, signing_secret, slack_event_path, reaction_event_fixture
+        self, app, signing_secret, event_path, reaction_event_fixture
     ):
         # setup
         client = TestClient(app)
@@ -418,14 +414,14 @@ class TestEventHandler:
             nonlocal EVENT_DATA_IN_HANDLER
             EVENT_DATA_IN_HANDLER = event_data
 
-        client.post(slack_event_path, data=data, headers=headers)
+        client.post(event_path, data=data, headers=headers)
 
         # validate
         assert EVENT_DATA_IN_HANDLER == json_data
 
     @freeze_time("2013-08-14")
     def test_run_handler_on_run_everytime(
-        self, app, signing_secret, slack_event_path, reaction_event_fixture
+        self, app, signing_secret, event_path, reaction_event_fixture
     ):
         # setup
         client = TestClient(app)
@@ -448,15 +444,15 @@ class TestEventHandler:
 
         # run
 
-        client.post(slack_event_path, data=data, headers=headers)
-        client.post(slack_event_path, data=data, headers=headers)
+        client.post(event_path, data=data, headers=headers)
+        client.post(event_path, data=data, headers=headers)
 
         # validate
         assert COUNTER == 2
 
     @freeze_time("2013-08-14")
     def test_run_handler_once_run_once(
-        self, app, signing_secret, slack_event_path, reaction_event_fixture
+        self, app, signing_secret, event_path, reaction_event_fixture
     ):
         # setup
         client = TestClient(app)
@@ -479,13 +475,13 @@ class TestEventHandler:
 
         # run
 
-        client.post(slack_event_path, data=data, headers=headers)
-        client.post(slack_event_path, data=data, headers=headers)
+        client.post(event_path, data=data, headers=headers)
+        client.post(event_path, data=data, headers=headers)
 
         # validate
         assert COUNTER == 1
 
-    def test_error_handler_sync(self, app, signing_secret, slack_event_path):
+    def test_error_handler_sync(self, app, signing_secret, event_path):
         # setup
         client = TestClient(app)
 
@@ -497,12 +493,12 @@ class TestEventHandler:
             nonlocal EVENT_DATA_IN_HANDLER
             EVENT_DATA_IN_HANDLER = event_data
 
-        client.post(slack_event_path)
+        client.post(event_path)
 
         # validate
         assert isinstance(EVENT_DATA_IN_HANDLER, SlackEventAppException)
 
-    def test_error_handler_async(self, app, signing_secret, slack_event_path):
+    def test_error_handler_async(self, app, signing_secret, event_path):
         # setup
         client = TestClient(app)
 
@@ -514,7 +510,7 @@ class TestEventHandler:
             nonlocal EVENT_DATA_IN_HANDLER
             EVENT_DATA_IN_HANDLER = event_data
 
-        client.post(slack_event_path)
+        client.post(event_path)
 
         # validate
         assert isinstance(EVENT_DATA_IN_HANDLER, SlackEventAppException)

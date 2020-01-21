@@ -12,7 +12,7 @@ from slackevent_responder import SlackEventApp
 # Setup SlackEventApp to receive Events from Slack API
 slack_signing_secret = os.environ["SLACK_SIGNING_SECRET"]
 slack_events_app = SlackEventApp(
-    slack_event_path="/events", slack_signing_secret=slack_signing_secret
+    event_path="/events", signing_secret=slack_signing_secret
 )
 
 # Mount SlackEventApp to Starlette
