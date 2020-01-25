@@ -3,7 +3,6 @@ import hashlib
 import hmac
 import json
 import platform
-import sys
 from collections import OrderedDict, defaultdict
 from time import time
 from typing import Any, Callable, Dict, Hashable, List, Union
@@ -41,10 +40,8 @@ class SlackEventApp(Router):
         # Collect the package info, Python version and OS version.
         package_info = {
             "client": f"{client_name}/{client_version}",
-            "python": "Python/{v.major}.{v.minor}.{v.micro}".format(
-                v=sys.version_info
-            ),
-            "system": "{}/{}".format(platform.system(), platform.release()),
+            "python": f"Python/{platform.python_version()}",
+            "system": f"{platform.system()}/{platform.release()}",
         }
 
         # Concatenate and format the user-agent string to be passed into request headers
